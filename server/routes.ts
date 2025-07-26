@@ -270,6 +270,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         query.limit = parseInt(query.limit, 10);
       }
       
+      // Handle search parameter
+      if (query.search && typeof query.search === 'string') {
+        query.search = query.search.trim();
+      }
+      
       const filters = issueFiltersSchema.parse(query);
       const result = await storage.getRecommendedIssuesForUser(userId, filters);
       res.json(result);
@@ -301,6 +306,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       if (query.limit && typeof query.limit === 'string') {
         query.limit = parseInt(query.limit, 10);
+      }
+      
+      // Handle search parameter
+      if (query.search && typeof query.search === 'string') {
+        query.search = query.search.trim();
       }
       
       const filters = issueFiltersSchema.parse(query);

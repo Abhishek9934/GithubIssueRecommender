@@ -24,6 +24,8 @@ export default function Home() {
     sortBy: 'recent'
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Onboarding tutorial state
   const { 
     showOnboarding, 
@@ -129,11 +131,12 @@ export default function Home() {
   }, []);
 
   const handleSearch = (query: string) => {
-    // TODO: Implement search functionality
-    toast({
-      title: "Search",
-      description: `Searching for: ${query}`,
-    });
+    setSearchQuery(query);
+    setFilters(prev => ({ 
+      ...prev, 
+      search: query.trim() || undefined, 
+      page: 1 
+    }));
   };
 
   const handleFiltersChange = (newFilters: Partial<IssueFilters>) => {

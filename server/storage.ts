@@ -122,19 +122,37 @@ export class MemStorage implements IStorage {
   async getIssues(filters: IssueFilters): Promise<{ issues: Issue[]; total: number }> {
     let allIssues = Array.from(this.issues.values());
 
-    // Apply filters
+    // Apply search filter
+    if (filters.search && filters.search.trim()) {
+      const searchTerm = filters.search.toLowerCase().trim();
+      allIssues = allIssues.filter(issue => {
+        const titleMatch = issue.title.toLowerCase().includes(searchTerm);
+        const bodyMatch = issue.body?.toLowerCase().includes(searchTerm) || false;
+        const repoMatch = issue.repositoryName.toLowerCase().includes(searchTerm);
+        const ownerMatch = issue.repositoryOwner.toLowerCase().includes(searchTerm);
+        const languageMatch = issue.language?.toLowerCase().includes(searchTerm) || false;
+        const labelsMatch = issue.labels.some(label => 
+          label.toLowerCase().includes(searchTerm)
+        );
+        return titleMatch || bodyMatch || repoMatch || ownerMatch || languageMatch || labelsMatch;
+      });
+    }
+
+    // Apply language filters
     if (filters.languages && filters.languages.length > 0) {
       allIssues = allIssues.filter(issue => 
         issue.language && filters.languages!.includes(issue.language)
       );
     }
 
+    // Apply difficulty filters
     if (filters.difficulty && filters.difficulty.length > 0) {
       allIssues = allIssues.filter(issue => 
         issue.difficulty && filters.difficulty!.includes(issue.difficulty)
       );
     }
 
+    // Apply repository size filters
     if (filters.repositorySize && filters.repositorySize !== "any") {
       allIssues = allIssues.filter(issue => {
         const stars = issue.repositoryStars || 0;
@@ -212,19 +230,57 @@ export class MemStorage implements IStorage {
 
     let allIssues = Array.from(this.issues.values());
 
-    // Prioritize issues in languages the user knows
-    if (user.topLanguages && user.topLanguages.length > 0) {
+    // Apply search filter first
+    if (filters.search && filters.search.trim()) {
+      const searchTerm = filters.search.toLowerCase().trim();
       allIssues = allIssues.filter(issue => {
-        if (!issue.language) return true;
-        return user.topLanguages!.includes(issue.language);
+        const titleMatch = issue.title.toLowerCase().includes(searchTerm);
+        const bodyMatch = issue.body?.toLowerCase().includes(searchTerm) || false;
+        const repoMatch = issue.repositoryName.toLowerCase().includes(searchTerm);
+        const ownerMatch = issue.repositoryOwner.toLowerCase().includes(searchTerm);
+        const languageMatch = issue.language?.toLowerCase().includes(searchTerm) || false;
+        const labelsMatch = issue.labels.some(label => 
+          label.toLowerCase().includes(searchTerm)
+        );
+        return titleMatch || bodyMatch || repoMatch || ownerMatch || languageMatch || labelsMatch;
+      });
+    } else {
+      // Only prioritize user languages when not searching
+      if (user.topLanguages && user.topLanguages.length > 0) {
+        allIssues = allIssues.filter(issue => {
+          if (!issue.language) return true;
+          return user.topLanguages!.includes(issue.language);
+        });
+      }
+    }
+
+    // Apply other filters
+    if (filters.languages && filters.languages.length > 0) {
+      allIssues = allIssues.filter(issue => 
+        issue.language && filters.languages!.includes(issue.language)
+      );
+    }
+
+    if (filters.difficulty && filters.difficulty.length > 0) {
+      allIssues = allIssues.filter(issue => 
+        issue.difficulty && filters.difficulty!.includes(issue.difficulty)
+      );
+    }
+
+    if (filters.repositorySize && filters.repositorySize !== "any") {
+      allIssues = allIssues.filter(issue => {
+        const stars = issue.repositoryStars || 0;
+        switch (filters.repositorySize) {
+          case "small": return stars < 100;
+          case "medium": return stars >= 100 && stars < 1000;
+          case "large": return stars >= 1000;
+          default: return true;
+        }
       });
     }
 
-    // Apply regular filters
-    const result = await this.getIssues({ ...filters });
-    
     // Mark recommended issues
-    const recommendedIssues = result.issues.map(issue => ({
+    const recommendedIssues = allIssues.map(issue => ({
       ...issue,
       isRecommended: user.topLanguages?.includes(issue.language || '') || 
                     issue.labels?.some(label => 
@@ -232,14 +288,21 @@ export class MemStorage implements IStorage {
                     ) || false
     }));
 
-    // Sort by recommendation score
+    // Sort by recommendation score or search relevance
     recommendedIssues.sort((a, b) => {
       const scoreA = this.calculateRecommendationScore(a, user);
       const scoreB = this.calculateRecommendationScore(b, user);
       return scoreB - scoreA;
     });
 
-    return { issues: recommendedIssues, total: recommendedIssues.length };
+    // Apply pagination
+    const total = recommendedIssues.length;
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
+    const start = (page - 1) * limit;
+    const issues = recommendedIssues.slice(start, start + limit);
+
+    return { issues, total };
   }
 
   private calculateRecommendationScore(issue: Issue, user: User): number {

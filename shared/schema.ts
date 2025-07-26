@@ -84,6 +84,7 @@ export const issueFiltersSchema = z.object({
   languages: z.array(z.string()).optional(),
   difficulty: z.array(z.string()).optional(),
   repositorySize: z.enum(["any", "small", "medium", "large"]).optional(),
+  search: z.string().optional(),
   sortBy: z.enum(["recent", "stars", "match", "comments"]).optional(),
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
