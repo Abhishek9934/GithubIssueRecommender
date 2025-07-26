@@ -250,8 +250,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/users/:userId/recommended-issues", async (req, res) => {
     try {
       const { userId } = req.params;
-      const filters = issueFiltersSchema.parse(req.query);
       
+      // Transform query parameters for proper parsing
+      const query = { ...req.query };
+      
+      // Handle array parameters that come as strings
+      if (query.languages && typeof query.languages === 'string') {
+        query.languages = [query.languages];
+      }
+      if (query.difficulty && typeof query.difficulty === 'string') {
+        query.difficulty = [query.difficulty];
+      }
+      
+      // Handle numeric parameters
+      if (query.page && typeof query.page === 'string') {
+        query.page = parseInt(query.page, 10);
+      }
+      if (query.limit && typeof query.limit === 'string') {
+        query.limit = parseInt(query.limit, 10);
+      }
+      
+      const filters = issueFiltersSchema.parse(query);
       const result = await storage.getRecommendedIssuesForUser(userId, filters);
       res.json(result);
     } catch (error) {
@@ -265,7 +284,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all issues with filters
   app.get("/api/issues", async (req, res) => {
     try {
-      const filters = issueFiltersSchema.parse(req.query);
+      // Transform query parameters for proper parsing
+      const query = { ...req.query };
+      
+      // Handle array parameters that come as strings
+      if (query.languages && typeof query.languages === 'string') {
+        query.languages = [query.languages];
+      }
+      if (query.difficulty && typeof query.difficulty === 'string') {
+        query.difficulty = [query.difficulty];
+      }
+      
+      // Handle numeric parameters
+      if (query.page && typeof query.page === 'string') {
+        query.page = parseInt(query.page, 10);
+      }
+      if (query.limit && typeof query.limit === 'string') {
+        query.limit = parseInt(query.limit, 10);
+      }
+      
+      const filters = issueFiltersSchema.parse(query);
       const result = await storage.getIssues(filters);
       res.json(result);
     } catch (error) {

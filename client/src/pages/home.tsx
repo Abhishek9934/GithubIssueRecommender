@@ -45,14 +45,15 @@ export default function Home() {
 
   // Create user from GitHub username
   const createUserMutation = useMutation({
-    mutationFn: (username: string) => apiRequest('POST', `/api/users/github/${username}`),
-    onSuccess: (response) => {
-      return response.json().then((userData) => {
-        setCurrentUser(userData);
-        toast({
-          title: "Success",
-          description: "GitHub profile connected successfully!"
-        });
+    mutationFn: async (username: string) => {
+      const response = await apiRequest('POST', `/api/users/github/${username}`);
+      return response.json();
+    },
+    onSuccess: (userData) => {
+      setCurrentUser(userData);
+      toast({
+        title: "Success",
+        description: "GitHub profile connected successfully!"
       });
     },
     onError: (error: any) => {

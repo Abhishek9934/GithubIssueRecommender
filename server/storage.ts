@@ -54,7 +54,7 @@ export class MemStorage implements IStorage {
       publicRepos: insertUser.publicRepos || 0,
       followers: insertUser.followers || 0,
       following: insertUser.following || 0,
-      topLanguages: insertUser.topLanguages || [],
+      topLanguages: Array.isArray(insertUser.topLanguages) ? insertUser.topLanguages : [],
       createdAt: new Date()
     };
     this.users.set(id, user);
@@ -65,7 +65,11 @@ export class MemStorage implements IStorage {
     const user = this.users.get(id);
     if (!user) return undefined;
 
-    const updatedUser = { ...user, ...updateData };
+    const updatedUser = { 
+      ...user, 
+      ...updateData,
+      topLanguages: Array.isArray(updateData.topLanguages) ? updateData.topLanguages : user.topLanguages
+    };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
@@ -175,7 +179,7 @@ export class MemStorage implements IStorage {
       id,
       body: insertIssue.body || null,
       language: insertIssue.language || null,
-      labels: insertIssue.labels || [],
+      labels: Array.isArray(insertIssue.labels) ? insertIssue.labels : [],
       repositoryStars: insertIssue.repositoryStars || 0,
       repositoryForks: insertIssue.repositoryForks || 0,
       comments: insertIssue.comments || 0,
@@ -192,7 +196,12 @@ export class MemStorage implements IStorage {
     const issue = this.issues.get(id);
     if (!issue) return undefined;
 
-    const updatedIssue = { ...issue, ...updateData, updatedAt: new Date() };
+    const updatedIssue = { 
+      ...issue, 
+      ...updateData, 
+      labels: Array.isArray(updateData.labels) ? updateData.labels : issue.labels,
+      updatedAt: new Date() 
+    };
     this.issues.set(id, updatedIssue);
     return updatedIssue;
   }
