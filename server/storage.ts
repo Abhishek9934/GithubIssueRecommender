@@ -48,6 +48,13 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id,
+      name: insertUser.name || null,
+      avatarUrl: insertUser.avatarUrl || null,
+      bio: insertUser.bio || null,
+      publicRepos: insertUser.publicRepos || 0,
+      followers: insertUser.followers || 0,
+      following: insertUser.following || 0,
+      topLanguages: insertUser.topLanguages || [],
       createdAt: new Date()
     };
     this.users.set(id, user);
@@ -77,6 +84,12 @@ export class MemStorage implements IStorage {
     const repository: Repository = { 
       ...insertRepository, 
       id,
+      description: insertRepository.description || null,
+      language: insertRepository.language || null,
+      stars: insertRepository.stars || 0,
+      forks: insertRepository.forks || 0,
+      openIssues: insertRepository.openIssues || 0,
+      isPrivate: insertRepository.isPrivate || false,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -160,6 +173,14 @@ export class MemStorage implements IStorage {
     const issue: Issue = { 
       ...insertIssue, 
       id,
+      body: insertIssue.body || null,
+      language: insertIssue.language || null,
+      labels: insertIssue.labels || [],
+      repositoryStars: insertIssue.repositoryStars || 0,
+      repositoryForks: insertIssue.repositoryForks || 0,
+      comments: insertIssue.comments || 0,
+      difficulty: insertIssue.difficulty || null,
+      isRecommended: insertIssue.isRecommended || false,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -186,7 +207,7 @@ export class MemStorage implements IStorage {
     if (user.topLanguages && user.topLanguages.length > 0) {
       allIssues = allIssues.filter(issue => {
         if (!issue.language) return true;
-        return user.topLanguages.includes(issue.language);
+        return user.topLanguages!.includes(issue.language);
       });
     }
 

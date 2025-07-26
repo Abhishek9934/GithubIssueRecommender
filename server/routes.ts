@@ -214,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             repositoryForks: repoDetails.forks_count,
             comments: githubIssue.comments,
             difficulty: determineDifficulty(labels),
-            isRecommended: labels.some(label => 
+            isRecommended: labels.some((label: string) => 
               ['good first issue', 'beginner friendly', 'help wanted'].includes(label.toLowerCase())
             ),
           };

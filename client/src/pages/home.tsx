@@ -65,19 +65,31 @@ export default function Home() {
   });
 
   // Get stats
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<{
+    totalIssues: number;
+    recommendedIssues: number;
+    newIssues: number;
+    topLanguages: Array<{ name: string; count: number }>;
+    difficultyCounts: Record<string, number>;
+  }>({
     queryKey: ['/api/stats'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Get issues
-  const { data: issuesData, isLoading: issuesLoading, error: issuesError } = useQuery({
+  const { data: issuesData, isLoading: issuesLoading, error: issuesError } = useQuery<{
+    issues: Issue[];
+    total: number;
+  }>({
     queryKey: ['/api/issues', filters],
     enabled: !!stats, // Only fetch when stats are available
   });
 
   // Get recommended issues for current user
-  const { data: recommendedData, isLoading: recommendedLoading } = useQuery({
+  const { data: recommendedData, isLoading: recommendedLoading } = useQuery<{
+    issues: Issue[];
+    total: number;
+  }>({
     queryKey: ['/api/users', currentUser?.id, 'recommended-issues', filters],
     enabled: !!currentUser,
   });
