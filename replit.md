@@ -107,17 +107,21 @@ The application is designed to be deployed on platforms like Replit, Vercel, or 
 ## Recent Changes (January 26, 2025)
 
 ✅ **GitHub API Integration**: Successfully configured with GitHub token for higher rate limits and data access
-✅ **Issue Synchronization**: 115+ beginner-friendly issues automatically synced from GitHub repositories
+✅ **Issue Synchronization**: 116+ beginner-friendly issues automatically synced from GitHub repositories
 ✅ **User Profile Connection**: GitHub username-based profile creation with language detection
 ✅ **TypeScript Fixes**: Resolved all array type handling and query parameter parsing issues
 ✅ **Frontend Data Loading**: Fixed React Query implementation and API request handling
 ✅ **Filtering System**: Fully functional sidebar filters for difficulty, language, and repository size
 ✅ **Responsive UI**: GitHub-themed interface with proper loading states and error handling
+✅ **Interactive Onboarding**: 6-step tutorial for new users with progress tracking and skip functionality
+✅ **GitHub Disconnect**: Profile dropdown menu with disconnect option and clean data removal
 
 ## Key Features Verified Working
 
 1. **Profile Integration**: Users can connect GitHub profiles and get personalized recommendations
-2. **Issue Discovery**: Browse 115+ curated beginner-friendly open source issues
+2. **Issue Discovery**: Browse 116+ curated beginner-friendly open source issues
 3. **Smart Filtering**: Filter by programming language, difficulty level, and repository popularity
 4. **Real-time Updates**: Issues sync automatically with fresh data from GitHub API
 5. **Responsive Design**: Works seamlessly across desktop and mobile devices
+6. **User Onboarding**: Interactive tutorial guides new users through app features
+7. **Profile Management**: Easy GitHub connection/disconnection via dropdown menu
