@@ -7,9 +7,10 @@ import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { RefreshCw, AlertCircle } from "lucide-react";
+import { RefreshCw, AlertCircle, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { OnboardingTutorial, useOnboarding } from "@/components/onboarding-tutorial";
 import type { User, Issue, IssueFilters } from "@shared/schema";
 
 export default function Home() {
@@ -22,6 +23,14 @@ export default function Home() {
     limit: 10,
     sortBy: 'recent'
   });
+
+  // Onboarding tutorial state
+  const { 
+    showOnboarding, 
+    setShowOnboarding, 
+    completeOnboarding, 
+    resetOnboarding 
+  } = useOnboarding();
 
   // Sync issues mutation
   const syncIssuesMutation = useMutation({
@@ -198,6 +207,16 @@ export default function Home() {
                     <RefreshCw className={`h-4 w-4 mr-1 ${syncIssuesMutation.isPending ? 'animate-spin' : ''}`} />
                     Refresh
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowOnboarding(true)}
+                    className="border-github-border hover:bg-github-bg"
+                    title="Show Tutorial"
+                  >
+                    <HelpCircle className="h-4 w-4 mr-1" />
+                    Help
+                  </Button>
                 </div>
               </div>
 
@@ -332,6 +351,13 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* Onboarding Tutorial */}
+      <OnboardingTutorial 
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={completeOnboarding}
+      />
     </div>
   );
 }
