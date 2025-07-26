@@ -2,16 +2,18 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Bell, Search, Github, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Bell, Search, Github, ChevronDown, LogOut, User as UserIcon, Settings } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { User } from "@shared/schema";
 
 interface HeaderProps {
   currentUser?: User;
   onSearch: (query: string) => void;
+  onDisconnectGitHub?: () => void;
 }
 
-export function Header({ currentUser, onSearch }: HeaderProps) {
+export function Header({ currentUser, onSearch, onDisconnectGitHub }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
@@ -64,16 +66,54 @@ export function Header({ currentUser, onSearch }: HeaderProps) {
                 <Bell className="h-4 w-4" />
               </Button>
               
-              <div className="flex items-center space-x-2">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={currentUser?.avatarUrl || ""} alt="User profile" />
-                  <AvatarFallback>{currentUser?.username?.[0]?.toUpperCase() || "U"}</AvatarFallback>
-                </Avatar>
-                <span className="hidden sm:block text-sm font-medium">
-                  {currentUser?.username || "Guest"}
-                </span>
-                <ChevronDown className="h-3 w-3 text-github-gray" />
-              </div>
+              {currentUser ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-2 p-2 hover:bg-github-bg">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={currentUser.avatarUrl || ""} alt="User profile" />
+                        <AvatarFallback>{currentUser.username?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+                      </Avatar>
+                      <span className="hidden sm:block text-sm font-medium text-github-text">
+                        {currentUser.username}
+                      </span>
+                      <ChevronDown className="h-3 w-3 text-github-gray" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-2 py-1.5">
+                      <p className="text-sm font-medium">Signed in as</p>
+                      <p className="text-sm text-muted-foreground">{currentUser.username}</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={onDisconnectGitHub}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Disconnect GitHub</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback>G</AvatarFallback>
+                  </Avatar>
+                  <span className="hidden sm:block text-sm font-medium text-github-text">
+                    Guest
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

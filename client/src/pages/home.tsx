@@ -74,6 +74,15 @@ export default function Home() {
     }
   });
 
+  // Handle disconnect GitHub
+  const handleDisconnectGitHub = () => {
+    setCurrentUser(null);
+    toast({
+      title: "Disconnected",
+      description: "GitHub profile disconnected successfully"
+    });
+  };
+
   // Get stats
   const { data: stats } = useQuery<{
     totalIssues: number;
@@ -155,7 +164,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header currentUser={currentUser || undefined} onSearch={handleSearch} />
+      <Header 
+        currentUser={currentUser || undefined} 
+        onSearch={handleSearch}
+        onDisconnectGitHub={handleDisconnectGitHub}
+      />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

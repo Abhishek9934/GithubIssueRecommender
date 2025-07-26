@@ -55,10 +55,23 @@ export function OnboardingTutorial({ isOpen, onClose, onComplete }: OnboardingTu
               </p>
             </div>
           </div>
-          <div className="bg-yellow-50 dark:bg-yellow-950 p-3 rounded-lg">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              💡 Tip: Click "Connect GitHub" in the header and enter your username to get started.
-            </p>
+          <div className="space-y-2">
+            <div className="bg-blue-50 dark:bg-blue-950 p-3 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>How it works:</strong>
+              </p>
+              <ul className="text-sm text-blue-700 dark:text-blue-300 mt-1 space-y-1">
+                <li>• Enter your GitHub username</li>
+                <li>• We analyze your public repositories</li>
+                <li>• Get recommendations based on your experience</li>
+                <li>• Disconnect anytime from your profile menu</li>
+              </ul>
+            </div>
+            <div className="bg-yellow-50 dark:bg-yellow-950 p-3 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                💡 Tip: Click "Connect GitHub" in the alert or your profile dropdown to get started.
+              </p>
+            </div>
           </div>
         </div>
       )
