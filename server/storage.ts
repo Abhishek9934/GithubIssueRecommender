@@ -54,7 +54,7 @@ export class MemStorage implements IStorage {
       publicRepos: insertUser.publicRepos || 0,
       followers: insertUser.followers || 0,
       following: insertUser.following || 0,
-      topLanguages: Array.isArray(insertUser.topLanguages) ? insertUser.topLanguages : [],
+      topLanguages: Array.isArray(insertUser.topLanguages) ? [...insertUser.topLanguages] : [],
       createdAt: new Date()
     };
     this.users.set(id, user);
@@ -68,7 +68,7 @@ export class MemStorage implements IStorage {
     const updatedUser = { 
       ...user, 
       ...updateData,
-      topLanguages: Array.isArray(updateData.topLanguages) ? updateData.topLanguages : user.topLanguages
+      topLanguages: Array.isArray(updateData.topLanguages) ? [...updateData.topLanguages] : user.topLanguages
     };
     this.users.set(id, updatedUser);
     return updatedUser;
@@ -131,7 +131,7 @@ export class MemStorage implements IStorage {
         const repoMatch = issue.repositoryName.toLowerCase().includes(searchTerm);
         const ownerMatch = issue.repositoryOwner.toLowerCase().includes(searchTerm);
         const languageMatch = issue.language?.toLowerCase().includes(searchTerm) || false;
-        const labelsMatch = issue.labels.some(label => 
+        const labelsMatch = (issue.labels || []).some(label => 
           label.toLowerCase().includes(searchTerm)
         );
         return titleMatch || bodyMatch || repoMatch || ownerMatch || languageMatch || labelsMatch;
@@ -197,7 +197,7 @@ export class MemStorage implements IStorage {
       id,
       body: insertIssue.body || null,
       language: insertIssue.language || null,
-      labels: Array.isArray(insertIssue.labels) ? insertIssue.labels : [],
+      labels: Array.isArray(insertIssue.labels) ? [...insertIssue.labels] : [],
       repositoryStars: insertIssue.repositoryStars || 0,
       repositoryForks: insertIssue.repositoryForks || 0,
       comments: insertIssue.comments || 0,
@@ -217,7 +217,7 @@ export class MemStorage implements IStorage {
     const updatedIssue = { 
       ...issue, 
       ...updateData, 
-      labels: Array.isArray(updateData.labels) ? updateData.labels : issue.labels,
+      labels: Array.isArray(updateData.labels) ? [...updateData.labels] : issue.labels,
       updatedAt: new Date() 
     };
     this.issues.set(id, updatedIssue);
@@ -239,7 +239,7 @@ export class MemStorage implements IStorage {
         const repoMatch = issue.repositoryName.toLowerCase().includes(searchTerm);
         const ownerMatch = issue.repositoryOwner.toLowerCase().includes(searchTerm);
         const languageMatch = issue.language?.toLowerCase().includes(searchTerm) || false;
-        const labelsMatch = issue.labels.some(label => 
+        const labelsMatch = (issue.labels || []).some(label => 
           label.toLowerCase().includes(searchTerm)
         );
         return titleMatch || bodyMatch || repoMatch || ownerMatch || languageMatch || labelsMatch;
@@ -283,7 +283,7 @@ export class MemStorage implements IStorage {
     const recommendedIssues = allIssues.map(issue => ({
       ...issue,
       isRecommended: user.topLanguages?.includes(issue.language || '') || 
-                    issue.labels?.some(label => 
+                    (issue.labels || []).some(label => 
                       ['good first issue', 'beginner friendly', 'help wanted'].includes(label.toLowerCase())
                     ) || false
     }));
@@ -314,7 +314,7 @@ export class MemStorage implements IStorage {
     }
 
     // Beginner-friendly labels
-    if (issue.labels?.some(label => 
+    if ((issue.labels || []).some(label => 
       ['good first issue', 'beginner friendly', 'help wanted'].includes(label.toLowerCase())
     )) {
       score += 15;

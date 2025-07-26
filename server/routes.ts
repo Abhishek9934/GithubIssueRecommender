@@ -262,20 +262,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         query.difficulty = [query.difficulty];
       }
       
-      // Handle numeric parameters
-      if (query.page && typeof query.page === 'string') {
-        query.page = parseInt(query.page, 10);
-      }
-      if (query.limit && typeof query.limit === 'string') {
-        query.limit = parseInt(query.limit, 10);
-      }
+      // Handle numeric parameters - parse but don't assign back to query
+      const page = query.page && typeof query.page === 'string' ? parseInt(query.page, 10) : undefined;
+      const limit = query.limit && typeof query.limit === 'string' ? parseInt(query.limit, 10) : undefined;
       
       // Handle search parameter
-      if (query.search && typeof query.search === 'string') {
-        query.search = query.search.trim();
-      }
+      const search = query.search && typeof query.search === 'string' ? query.search.trim() : undefined;
       
-      const filters = issueFiltersSchema.parse(query);
+      // Create properly typed filters object
+      const filters = issueFiltersSchema.parse({
+        ...query,
+        page,
+        limit,
+        search
+      });
+      
       const result = await storage.getRecommendedIssuesForUser(userId, filters);
       res.json(result);
     } catch (error) {
@@ -300,20 +301,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         query.difficulty = [query.difficulty];
       }
       
-      // Handle numeric parameters
-      if (query.page && typeof query.page === 'string') {
-        query.page = parseInt(query.page, 10);
-      }
-      if (query.limit && typeof query.limit === 'string') {
-        query.limit = parseInt(query.limit, 10);
-      }
+      // Handle numeric parameters - parse but don't assign back to query
+      const page = query.page && typeof query.page === 'string' ? parseInt(query.page, 10) : undefined;
+      const limit = query.limit && typeof query.limit === 'string' ? parseInt(query.limit, 10) : undefined;
       
       // Handle search parameter
-      if (query.search && typeof query.search === 'string') {
-        query.search = query.search.trim();
-      }
+      const search = query.search && typeof query.search === 'string' ? query.search.trim() : undefined;
       
-      const filters = issueFiltersSchema.parse(query);
+      // Create properly typed filters object
+      const filters = issueFiltersSchema.parse({
+        ...query,
+        page,
+        limit,
+        search
+      });
+      
       const result = await storage.getIssues(filters);
       res.json(result);
     } catch (error) {
